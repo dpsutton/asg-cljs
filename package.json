@@ -1,0 +1,16 @@
+{
+  "name": "asg",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "shadow-cljs": "2.8.10"
+  },
+  "dependencies": {
+    "create-react-class": "^15.6.3",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3",
+    "react-typography": "^0.16.18",
+    "styled-components": "^3.3.3",
+    "typography": "^0.16.18"
+  }
+}
