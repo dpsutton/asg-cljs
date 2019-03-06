@@ -4,6 +4,7 @@
             [asg.styles.typography :as typo]
             [asg.header :as header]
             [asg.sections.banner :as banner]
+            [asg.sections.events :as events]
             [asg.stripes :as stripes]
             [clojure.string :as str]
             ["typography" :as typography]
@@ -15,8 +16,8 @@
    [rtypo/GoogleFont #js{:typography (typography (clj->js typo/options))}]
    [header/Header]
    [banner/Banner]
-   [stripes/MainStripe]]
-  )
+   [stripes/MainStripe]
+   [events/Events {:max-events 10}]])
 
 (defn main! []
   (r/render [asg-page]

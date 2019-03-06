@@ -25,3 +25,6 @@
                                 (if diagonal (str (* (+ index 1) step) "em ") " 0 ")
                                 "0 " color))
                          colors)))
+
+(defn section-header [section-text]
+  [:h1 {:id (str/lower-case section-text)} section-text])
