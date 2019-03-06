@@ -5,6 +5,7 @@
             [asg.header :as header]
             [asg.sections.banner :as banner]
             [asg.sections.events :as events]
+            [asg.sections.slack-signup :as slack]
             [asg.stripes :as stripes]
             [clojure.string :as str]
             ["typography" :as typography]
@@ -17,7 +18,8 @@
    [header/Header]
    [banner/Banner]
    [stripes/MainStripe]
-   [events/Events {:max-events 10}]])
+   [events/Events {:max-events 10}]
+   [slack/Signup]])
 
 (defn main! []
   (r/render [asg-page]
