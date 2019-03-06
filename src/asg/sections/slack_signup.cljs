@@ -17,14 +17,13 @@
                  (every? short-enough? parts))))
 
 (defn input [state on-change]
-  (let []
-    [:input {:style     {:border-color (if (or (str/blank? (:email @state))
-                                               (:submittable? @state))
-                                         "grey"
-                                         "red")}
-             :value     (:email @state)
-             :type      "text"
-             :on-change #(on-change (.. % -target -value))}]))
+  [:input {:style     {:border-color (if (or (str/blank? (:email @state))
+                                             (:submittable? @state))
+                                       "grey"
+                                       "red")}
+           :value     (:email @state)
+           :type      "text"
+           :on-change #(on-change (.. % -target -value))}])
 
 (defn submit [state]
   [:button {:disabled (not (:submittable? @state))
