@@ -1,7 +1,8 @@
 (ns asg.sections.events
   (:require [reagent.core :as r]
             [asg.styles.alignment :as align]
-            [asg.styles.typography :as typo]))
+            [asg.styles.typography :as typo]
+            [cljs-styled-components.reagent :refer [defstyled]]))
 
 (def events-url "https://wnephqc0h5.execute-api.us-east-1.amazonaws.com/prod/events/upcoming")
 
@@ -16,12 +17,46 @@
    :endDate   "2019-03-14T01:00:00.000Z",
    :source    "Acadiana Software Group Calendar"})
 
+(defstyled Title :h3
+  {})
+
+(defstyled Info-Body :div
+  {:margin-left           "45px"
+   :display               "grid"
+   :align-items "center"
+   :grid-template-columns "100px auto"})
+
+(defstyled Info-Row :div
+  {:display        "flex"
+   :margin-top     "35px"
+   :padding        "15px"
+   :box-shadow     "0 4px 6px 0 hsla(0, 0%, 0%, 0.2)"
+   :border-top     "6px solid #437F97"
+   :flex-direction "column"
+   :margin-left    "15px"})
+
+(def category-style {:font-size    "10px"
+                     :color        "grey"
+                     :font-weight  "900"
+                     :margin-right "35px"})
+
 (defn EventList [events]
   [:ul
    (doall
-    (for [{title :name :keys [id] :as event} events]
-      ^{:key (:id event)}
-      [:li title]))])
+    (for [{title :name :keys [id location startDate] :as event} events]
+      (let [start      (js/Date. startDate)
+            start-time (.toLocaleDateString start)]
+        ^{:key (:id event)}
+        [:li {:style {:list-style-type "none"}}
+         [Info-Row
+          [Title title]
+          [Info-Body
+           [:span {:style category-style}
+            "Location:"]
+           [:span location]
+           [:span {:style category-style}
+            "Time: "]
+           [:span start-time]]]])))])
 
 (defn UpcomingEvents [{:keys [max-events]}]
   (let [state          (r/atom {:stage  :loading
