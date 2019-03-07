@@ -11,6 +11,13 @@
             ["typography" :as typography]
             ["react-typography" :as rtypo]))
 
+(defn cloud [side]
+  [:img {:src   "/images/mario-clouds.png"
+         :style {:position "absolute"
+                 :bottom   (str (min 200 (- 500 (rand-int 1000))) "px")
+                 side     "10px"
+                 :z-index  "-100"}}])
+
 (defn asg-page []
   [:div
    [rtypo/TypographyStyle #js{:typography (typography (clj->js typo/options))}]
@@ -19,7 +26,9 @@
    [banner/Banner]
    [stripes/MainStripe]
    [events/Events {:max-events 10}]
-   [slack/Signup]])
+   [slack/Signup]
+   [cloud :right]
+   [cloud :left]])
 
 (defn main! []
   (r/render [asg-page]

@@ -58,7 +58,8 @@
                      (.catch (fn [response]
                                (swap! state assoc :stage :error)))))]
     [align/Container
-     [typo/section-header "Slack Signup"]
+     [typo/section-header {:text "Slack Signup"
+                           :id   "join"}]
      (case (:stage @state)
        :editing
        [:form {:on-submit #(do (.preventDefault %)

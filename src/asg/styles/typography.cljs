@@ -4,8 +4,9 @@
             [clojure.string :as str]))
 
 (def options {:headerFontFamily ["itc-avant-garde-gothic-pro" "sans-serif"]
-              :headerWeight "400"
-              :bodyFontFamily ["sofia-pro" "sans-serif"]})
+              :headerWeight     "400"
+              :bodyFontFamily   ["sofia-pro" "sans-serif"]
+              :background       "#6c82ff"})
 
 (defstyled Link :a
   {:text-decoration "none"})
@@ -26,5 +27,15 @@
                                 "0 " color))
                          colors)))
 
-(defn section-header [section-text]
-  [:h1 {:id (str/lower-case section-text)} section-text])
+(defn section-header [{:keys [text id]}]
+  [:h1 {:id    id
+        :style {:font-family   "super_plumber_brothersregular"
+                :font-size     "130px"
+                :text-shadow   "3px 12px black"
+                :border-right  "3px solid #0e0112"
+                :border-bottom "3px solid #0e0112"
+                :border-top    "3px solid #ebc7d6"
+                :border-left   "3px solid #ebc7d6"
+                :background    "#d84900"
+                :color         "#f2c5bd"
+                :padding       "50px"}} text])

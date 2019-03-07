@@ -18,18 +18,20 @@
    :source    "Acadiana Software Group Calendar"})
 
 (defstyled Title :h3
-  {})
+  {:font-family "press-start"})
 
 (defstyled Info-Body :div
-  {:margin-left           "45px"
+  {:margin-left           "20"
    :display               "grid"
    :align-items "center"
-   :grid-template-columns "100px auto"})
+   :grid-template-columns "140px auto"})
 
 (defstyled Info-Row :div
   {:display        "flex"
    :margin-top     "35px"
    :padding        "15px"
+   :background     "white"
+   :font-family    "press-start"
    :box-shadow     "0 4px 6px 0 hsla(0, 0%, 0%, 0.2)"
    :border-top     "6px solid #437F97"
    :flex-direction "column"
@@ -55,7 +57,7 @@
             "Location:"]
            [:span location]
            [:span {:style category-style}
-            "Time: "]
+            "Date: "]
            [:span start-time]]]])))])
 
 (defn UpcomingEvents [{:keys [max-events]}]
@@ -98,5 +100,6 @@
 
 (defn Events [{:keys [max-events]}]
   [align/Container
-   [typo/section-header "Events"]
+   [typo/section-header {:text "Events"
+                         :id   "events"}]
    [UpcomingEvents {:max-events max-events}]])
