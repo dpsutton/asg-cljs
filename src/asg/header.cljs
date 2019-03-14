@@ -27,7 +27,7 @@
    [ASG-Text {} "ASG"]])
 
 (defn Nav []
-  [:div (for [event ["events" "about" "join"]]
+  [:div (for [event ["events" "recent" "about" "join"]]
           ^{:key event}
           [typo/Navlink {:href (str "#" event)} event])])
 

@@ -98,8 +98,34 @@
                 :else
                 [:p "Unknown issue with events"])))})))
 
+(def past-events
+  [{:title "TECHNICAL UX:"
+    :subtitle "UX for developers"
+    :url "https://ux-for-developers.netlify.com/"
+    :notes "Press alt-p for notes"
+    :date (js/Date. 2019 2 13)}])
+
+(defn PastEvents []
+  [:ul
+   (doall
+    (for [{:keys [title subtitle url notes date] :as event} past-events]
+      ^{:key (hash event)}
+      [:li {:style {:list-style-type "none"}}
+       [Info-Row
+        [Title title]
+        [Info-Body
+         [:span {:style category-style} "Subtitle:"]
+         [:span (if url [:a {:href url} subtitle] subtitle)]
+         [:span {:style category-style} "Date:"]
+         [:span (.toLocaleDateString date)]
+         [:span {:style category-style} "Notes:"]
+         [:span notes]]]]))])
+
 (defn Events [{:keys [max-events]}]
   [align/Container
    [typo/section-header {:text "Events"
                          :id   "events"}]
-   [UpcomingEvents {:max-events max-events}]])
+   [UpcomingEvents {:max-events max-events}]
+   [typo/section-header {:text "Recent Events"
+                         :id   "recent"}]
+   [PastEvents]])
