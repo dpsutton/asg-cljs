@@ -18,14 +18,14 @@
                      short-enough? (fn [s] (< (count s) 63))]
                  (every? short-enough? parts))))
 
-(defn input [state new-state]
+(defn input [state send-action]
   [:input {:style     {:border-color (if (or (str/blank? (:email @state))
                                              (:submittable? @state))
                                        "grey"
                                        "red")}
            :value     (:email @state)
            :type      "text"
-           :on-change #(new-state :email (.. % -target -value))}])
+           :on-change #(send-action [:email (.. % -target -value)])}])
 
 (defn submit [state]
   [:button {:disabled (not (:submittable? @state))
@@ -34,10 +34,12 @@
 
 (def signup-url "https://wnephqc0h5.execute-api.us-east-1.amazonaws.com/prod/slack")
 
-(def state  (r/atom {:submittable? false
-                     :stage        :editing
-                     :email        ""
-                     :captcha-token nil}))
+(def initial-state {:submittable? false
+                    :stage        :editing
+                    :email        ""
+                    :captcha-token nil})
+
+(def state  (r/atom initial-state))
 
 (defn mark-valid-state [{:keys [email captcha-token] :as state}]
   (assoc state :submittable? (and (valid-email? email)
@@ -46,26 +48,36 @@
 (defn state->send-payload [{:keys [email captcha-token]}]
   #js {:email email :recaptchaToken captcha-token})
 
+(defn state-reducer [state [action arg]]
+  (mark-valid-state
+   (case action
+     :email (assoc state :email arg)
+     :captcha-token (assoc state :captcha-token arg)
+     :sending (assoc state :stage :sending)
+     :completed (assoc initial-state :stage :sent)
+     :error (assoc state :stage :error :error-message arg))))
+
 (defn Signup []
-  (let [new-state (fn [k v]
-                    (swap! state #(mark-valid-state (assoc % k v))))
+  (let [send-action (fn [arg]
+                      (swap! state state-reducer arg))
         send! (fn [payload]
-                 (swap! state assoc :stage :sending)
-                 ;; fetch says this request is not OK. Not sure why
-                 (-> (js/fetch signup-url
-                               #js {:method "POST"
-                                    :mode "no-cors"
-                                    :cache "no-cache"
-                                    :credentials "same-origin"
-                                    ;; todo: not sure these headers
-                                    ;; are set correctly
-                                    ;; https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-                                    :headers #js {"Content-Type" "application/json"}
-                                    :body (.stringify js/JSON payload)})
-                     (.then (fn [response]
-                              (swap! state assoc :stage :sent :captcha-token nil)))
-                     (.catch (fn [response]
-                               (swap! state assoc :stage :error)))))]
+                (send-action [:sending])
+                ;; fetch says this request is not OK. Not sure why
+                (-> (js/fetch signup-url
+                              #js {:method "POST"
+                                   :mode "no-cors"
+                                   :cache "no-cache"
+                                   :credentials "same-origin"
+                                   ;; todo: not sure these headers
+                                   ;; are set correctly
+                                   ;; https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+                                   :headers #js {"Content-Type" "application/json"}
+                                   :body (.stringify js/JSON payload)})
+                    (.then (fn [response]
+                             (send-action [:completed])))
+                    (.catch (fn [response]
+                              (send-action [:error "Error sending your login. If they can't get this right are you sure you want to join?"])
+                              (swap! state assoc :stage :error)))))]
     [align/Container
      [typo/section-header {:text "Slack Signup"
                            :id   "join"}]
@@ -76,15 +88,15 @@
                                  (send! (state->send-payload @state))))}
         [:> recaptcha
          {:sitekey client-key
-          :onChange (fn [token] (new-state :captcha-token token))
+          :onChange (fn [token] (send-action [:captcha-token token]))
           :style {:margin "2em"
                   :display "flex"
                   :justify-content "center"}}]
-        [input state new-state]
+        [input state send-action]
         [submit state]]
        :sending
        [:h1 "sending state"]
        :sent
        [:h1 "accepted state"]
        :error
-       [:h1 "error state"])]))
+       [:p (:error-message @state)])]))
