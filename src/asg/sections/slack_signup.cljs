@@ -76,8 +76,7 @@
                     (.then (fn [response]
                              (send-action [:completed])))
                     (.catch (fn [response]
-                              (send-action [:error "Error sending your login. If they can't get this right are you sure you want to join?"])
-                              (swap! state assoc :stage :error)))))]
+                              (send-action [:error "Error sending your login. If they can't get this right are you sure you want to join?"])))))]
     [align/Container
      [typo/section-header {:text "Slack Signup"
                            :id   "join"}]
