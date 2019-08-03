@@ -5,7 +5,6 @@
             [asg.header :as header]
             [asg.sections.banner :as banner]
             [asg.sections.events :as events]
-            [asg.sections.slack-signup :as slack]
             [asg.stripes :as stripes]
             [clojure.string :as str]
             ["typography" :as typography]
@@ -26,7 +25,6 @@
    [banner/Banner]
    [stripes/MainStripe]
    [events/Events {:max-events 10}]
-   [slack/Signup]
    [cloud :right]
    [cloud :left]])
 

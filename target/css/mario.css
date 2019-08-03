@@ -29,3 +29,55 @@ body {
     font-style: normal;
 }
 
+#login-button {
+    font-size: 1.2em;
+    color: #ffffff;
+    border-color: #ffffff;
+    position: relative;
+    padding: 0 1em;
+    min-width: 170px;
+    border: 3px solid;
+    margin-left: 0.5em;
+    font-family: itc-avant-garde-gothic-pro;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background-color: #0e1eb3;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 2.3;
+    appearance: none;
+
+    &:before,
+    &:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: -4px;
+        bottom: -4px;
+        border: 3px solid;
+        transform: translate(2px, 2px);
+        transition: transform 0.1s;
+    }
+
+    &:before {
+        border-color: #F1BA1F;
+        z-index: -1;
+    }
+
+    &:after {
+        transform: translate(5px, 5px);
+        border-color: #b50f0f;
+        z-index: -2;
+    }
+
+    &:hover {
+        background-color: #394bef;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}

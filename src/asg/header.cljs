@@ -1,8 +1,13 @@
 (ns asg.header
-  (:require [cljs-styled-components.reagent :refer [defstyled]]
+  (:require ["react-modal" :as Modal]
+            [reagent.core :as r]
+            [asg.styles.alignment :as align]
             [asg.styles.colors :as colors]
             [asg.styles.typography :as typo]
-            [asg.styles.alignment :as align]))
+            [asg.sections.slack-signup :as slack]
+            [cljs-styled-components.reagent :refer [defstyled]]))
+
+(.setAppElement Modal "#app")
 
 (defstyled StyledHeader :header
   {:background colors/primary})
@@ -13,26 +18,32 @@
    :flex-direction  "row"
    :justify-content "space-between"})
 
-(defstyled ASG-Text :h1
-  {:color           "white"
-   :text-decoration "none"
-   :letter-spacing  "0.05em"
-   :margin          "0 0 0 0.1em"
-   :text-shadow     (typo/text-stripper {:colors (map colors/stripes [:yellow :red])
-                                         :step 0.05})
-   :text-transform  "uppercase"})
-
-(defn Asg []
-  [typo/Link {:href "/"}
-   [ASG-Text {} "ASG"]])
-
 (defn Nav []
   [:div (for [event ["events" "recent" "about" "join"]]
           ^{:key event}
           [typo/Navlink {:href (str "#" event)} event])])
 
-(defn Header []
+(defn header* [modal-state]
   [StyledHeader
    [HeaderContainer
-    [Asg]
-    [Nav]]])
+    [typo/Navlink {:href "#events"} "Events"]
+    [typo/Navlink {:href "#recent"} "Past Events"]
+    [typo/Navlink {:href "#about"} "About"]
+    [typo/Navlink {:href "#"
+                   :onClick #(reset! modal-state true)} "Slack Signup"]
+
+    [:> Modal {:isOpen @modal-state
+               :onRequestClose #(reset! modal-state false)
+               :contentLabel "Slack Signup"
+               :shouldCloseOnOverlayClick true
+               :style {:content {:top         "50%"
+                                 :left        "50%"
+                                 :right       "auto"
+                                 :bottom      "auto"
+                                 :marginRight "-50%"
+                                 :transform   "translate(-50%, -50%)"}}}
+     [slack/Signup]]]])
+
+(defn Header []
+  (let [modal-state (r/atom false)]
+    [header* modal-state]))

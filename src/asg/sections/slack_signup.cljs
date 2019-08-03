@@ -1,9 +1,11 @@
 (ns asg.sections.slack-signup
-  (:require [reagent.core :as r]
+  (:require ["react-google-recaptcha" :default recaptcha]
             [asg.styles.alignment :as align]
-            ["react-google-recaptcha" :default recaptcha]
+            [asg.styles.colors :as colors]
             [asg.styles.typography :as typo]
-            [clojure.string :as str]))
+            [cljs-styled-components.reagent :refer [defstyled clj-props]]
+            [clojure.string :as str]
+            [reagent.core :as r]))
 
 (def client-key "6Lfx6ZcUAAAAANfkT0wc8BYKRVfXdr8vEk7fhe6w")
 
@@ -28,8 +30,9 @@
            :on-change #(send-action [:email (.. % -target -value)])}])
 
 (defn submit [state]
-  [:button {:disabled (not (:submittable? @state))
-            :type     "submit"}
+  [:button#login-button
+   {:disabled (not (:submittable? @state))
+    :type     "submit"}
    "Submit"])
 
 (def signup-url "https://wnephqc0h5.execute-api.us-east-1.amazonaws.com/prod/slack")
@@ -57,6 +60,17 @@
      :completed (assoc initial-state :stage :sent)
      :error (assoc state :stage :error :error-message arg))))
 
+(defstyled EmailInput :input
+  {:font-size "1.2em"
+   :padding "0 0.6em"
+   :border "1px solid"
+   :color (:grey colors/colors)
+   :border-color (clj-props #(get colors/colors (if (:hasError %) :red :grey)))
+   :width "500px"
+   :vertical-align "bottom"
+   :transform "translate(0, 3px)"
+   :line-height "2.6"})
+
 (defn Signup []
   (let [send-action (fn [arg]
                       (swap! state state-reducer arg))
@@ -82,17 +96,28 @@
                            :id   "join"}]
      (case (:stage @state)
        :editing
-       [:form {:on-submit #(do (.preventDefault %)
-                               (when (:submittable? @state)
-                                 (send! (state->send-payload @state))))}
-        [:> recaptcha
-         {:sitekey client-key
-          :onChange (fn [token] (send-action [:captcha-token token]))
-          :style {:margin "2em"
-                  :display "flex"
-                  :justify-content "center"}}]
-        [input state send-action]
-        [submit state]]
+       [:div {:style {:background (:white colors/colors)}}
+        [:form {:on-submit #(do (.preventDefault %)
+                                (when (:submittable? @state)
+                                  (send! (state->send-payload @state))))}
+         [:h1 "Join Acadiana Software Group on Slack" ]
+         [:p
+          "Please enter your email address below to request an invite to the ASG"
+          "Slack. You should receive an invitation within 24 hours."]
+         [:> recaptcha
+          {:sitekey client-key
+           :onChange (fn [token] (send-action [:captcha-token token]))
+           :style {:margin "2em"
+                   :display "flex"
+                   :justify-content "center"}}]
+         [:div {:style {:display "flex"
+                        :justify-content "center"
+                        :align-items "baseline"}}
+          [EmailInput {:name "email"
+                       :value (:email @state)
+                       :placeholder "developer@gmail.com"
+                       :onChange (fn [email] (send-action [:email email]))}]
+          [submit state]]]]
        :sending
        [:h1 "sending state"]
        :sent
